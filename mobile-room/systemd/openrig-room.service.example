@@ -1,0 +1,25 @@
+# Mobile OpenRig room gateway — systemd USER service template
+# 1. Copy to ~/.config/systemd/user/openrig-room.service
+# 2. Replace <...> placeholders with your values
+# 3. systemctl --user daemon-reload && systemctl --user enable --now openrig-room.service
+# 4. loginctl enable-linger $USER   # survive logout/reboot
+
+[Unit]
+Description=Mobile OpenRig room gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/mobile-openrig/mobile-room
+ExecStart=/usr/bin/node %h/mobile-openrig/mobile-room/src/roomd.mjs
+Restart=on-failure
+RestartSec=5
+# If you use a VPN interface listener (ROOM_PRIVATE_HOST), wait for it:
+# ExecStartPre=/bin/sh -c 'until ip -4 addr show <tailscale0> 2>/dev/null | grep -q "inet "; do sleep 2; done'
+# Environment=ROOM_PRIVATE_HOST=<your-vpn-ip>
+# Environment=OPENRIG_RIG=<your-rig-name>
+Environment=NODE_OPTIONS=--no-warnings
+
+[Install]
+WantedBy=default.target

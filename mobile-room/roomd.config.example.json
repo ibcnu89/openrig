@@ -1,0 +1,17 @@
+{
+  "daemon": { "host": "127.0.0.1", "port": 31455 },
+  "bind": {
+    "local": { "host": "127.0.0.1", "port": 8800 },
+    "private": null
+  },
+  "mcp": { "host": "127.0.0.1", "port": 8810 },
+  "rig": "first-project",
+  "agents": [
+    { "session": "dev-owner@first-project", "name": "Codex · owner", "short": "dev-owner", "kind": "codex", "avatar": "🧑‍💻" },
+    { "session": "dev-check@first-project", "name": "Codex · checker", "short": "dev-check", "kind": "codex", "avatar": "🔍" }
+  ],
+  "humans": [{ "id": "you", "name": "You", "avatar": "🧑" }],
+  "hermes": { "name": "Hermes", "avatar": "🪽", "session": "openrig-room", "timeoutMs": 600000, "workdir": null },
+  "nexus": { "name": "Nexus", "avatar": "🌐" },
+  "limits": { "maxAutoHandoffDepth": 2, "transcriptPollActiveMs": 4000, "transcriptPollIdleMs": 15000, "dedupeWindowMs": 600000 }
+}
