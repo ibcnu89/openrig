@@ -2,6 +2,21 @@
 
 [![npm version](https://img.shields.io/npm/v/@openrig/cli)](https://www.npmjs.com/package/@openrig/cli) [![npm downloads](https://img.shields.io/npm/dw/@openrig/cli)](https://www.npmjs.com/package/@openrig/cli) [![License: Apache 2.0](https://img.shields.io/github/license/mvschwarz/openrig)](LICENSE) [![GitHub stars](https://img.shields.io/github/stars/mvschwarz/openrig?style=social)](https://github.com/mvschwarz/openrig/stargazers)
 
+> ## Fork notice — Mobile OpenRig
+>
+> **This repository is a fork of [OpenRig by mvschwarz](https://github.com/mvschwarz/openrig).**
+> OpenRig provides the underlying multi-agent coordination system — the daemon, rigs,
+> seats, chatroom, transcripts and everything else documented below. The original OpenRig
+> author and project created and maintain OpenRig; they did **not** create, maintain,
+> endorse, or support the additions in this fork.
+>
+> This fork adds a **mobile control room**: a phone-first web/PWA group-chat interface
+> that fronts the OpenRig daemon, plus bridges for Hermes seats and an optional local MCP
+> surface. All of that lives in [`mobile-room/`](mobile-room/README.md). See
+> [mobile-room/README.md](mobile-room/README.md) for what it adds, installation, and its
+> security model. The rest of this README is the upstream OpenRig documentation, kept
+> intact for reference.
+
 A harness wraps a model. A rig wraps your harnesses. Define your agent team in YAML, boot it with one command. Claude Code and Codex in the same rig, managed as one system.
 
 OpenRig is open-source software for building and running your own network of agents. It turns AI coding agents from a pile of terminal sessions into a persistent, organized team. Talk to a lead agent about the outcome you want; it can coordinate specialists across teams and bring you results and decisions that need your attention. Start with a repository and one useful change, then keep the team's work and context at the same addresses.

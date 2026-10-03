@@ -45,3 +45,9 @@ packages/daemon/context-packs/
 
 # Internal build receipts; never commit
 /.evidence/
+
+# mobile-room runtime + local config (never commit)
+mobile-room/.env
+mobile-room/roomd.config.json
+mobile-room/.state/
+mobile-room/**/room-state.db*
