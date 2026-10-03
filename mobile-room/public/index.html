@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0b0f14">
+<title>Room · Nexus HQ</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon.svg">
+<style>
+:root{
+  --bg:#0b0f14; --panel:#121821; --panel2:#0e141c; --line:#1e2836; --txt:#e6edf3;
+  --dim:#8b98a5; --acc:#2f81f7; --acc2:#1f6feb; --me:#1c3a5e; --ok:#2ea043; --warn:#d29922;
+  --err:#f85149; --radius:16px; --safe-b:env(safe-area-inset-bottom);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  display:flex;flex-direction:column;overflow:hidden}
+header{position:fixed;top:0;left:0;right:0;z-index:30;background:linear-gradient(180deg,#0d1420 0%,#0d1420cc 75%,transparent 100%);
+  padding:10px 14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+header h1{font-size:16px;letter-spacing:.3px;font-weight:700;display:flex;align-items:center;gap:8px}
+header .conn{font-size:11px;color:var(--dim);display:flex;align-items:center;gap:5px}
+header .conn .dot{width:7px;height:7px;border-radius:50%;background:var(--warn)}
+header .conn .dot.on{background:var(--ok)}header .conn .dot.off{background:var(--err)}
+#agentsBar{position:fixed;top:52px;left:0;right:0;z-index:29;display:flex;gap:8px;overflow-x:auto;padding:8px 12px 10px;
+  background:#0d1420ee;scrollbar-width:none}#agentsBar::-webkit-scrollbar{display:none}
+.agent-chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);
+  border-radius:999px;padding:6px 12px 6px 8px;font-size:12px;color:var(--txt);cursor:pointer;user-select:none}
+.agent-chip .av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;background:#0009}
+.agent-chip .st{width:8px;height:8px;border-radius:50%}
+.agent-chip .st.online{background:var(--ok)}.agent-chip .st.working{background:var(--warn);animation:pulse 1.2s infinite}
+.agent-chip .st.waiting{background:#58a6ff}.agent-chip .st.error{background:var(--err)}.agent-chip .st.offline{background:#484f58}
+.agent-chip .st.unavailable{background:#484f58;position:relative}
+.agent-chip .st.unavailable::after{content:"";position:absolute;inset:-3px;border:1.5px solid #484f58;border-radius:50%;transform:rotate(45deg);border-top:transparent;border-right:transparent}
+@keyframes pulse{50%{opacity:.35}}
+.agent-chip.sel{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+#chat{position:fixed;top:100px;bottom:calc(76px + var(--safe-b));left:0;right:0;overflow-y:auto;overscroll-behavior:contain;
+  padding:10px 12px 20px;scroll-behavior:smooth}
+.day-sep{display:flex;justify-content:center;margin:12px 0}
+.day-sep span{background:var(--panel2);color:var(--dim);font-size:11px;padding:4px 12px;border-radius:999px;border:1px solid var(--line)}
+.msg{display:flex;gap:9px;margin:7px 0;max-width:100%}
+.msg.mine{flex-direction:row-reverse}
+.msg .avatar{flex:0 0 34px;width:34px;height:34px;border-radius:50%;background:var(--panel);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:17px;margin-top:2px}
+.msg.mine .avatar{background:var(--me)}
+.msg .bodywrap{max-width:78%}
+.msg .meta{font-size:11px;color:var(--dim);margin:0 4px 3px;display:flex;gap:6px;align-items:baseline}
+.msg.mine .meta{justify-content:flex-end}
+.msg .meta b{color:var(--txt);font-weight:600}
+.msg .bubble{background:var(--panel);border:1px solid var(--line);padding:9px 12px;border-radius:var(--radius);
+  font-size:14.5px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere}
+.msg.mine .bubble{background:var(--me);border-color:#27476d}
+.msg .bubble code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:#0009;padding:1px 5px;border-radius:5px}
+.msg.system .bubble{background:transparent;border-style:dashed;color:var(--dim);font-size:12.5px;text-align:center;max-width:92%}
+.msg .st-work{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--warn);margin:0 4px 3px}
+.msg .st-work .dots i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--warn);margin:0 1px;animation:pulse 1s infinite}
+.msg .st-work .dots i:nth-child(2){animation-delay:.2s}.msg .st-work .dots i:nth-child(3){animation-delay:.4s}
+#composer{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--panel2);border-top:1px solid var(--line);
+  padding:10px 12px calc(10px + var(--safe-b));display:flex;gap:8px;align-items:flex-end}
+#composer .to-sel{flex:0 0 auto;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--panel);
+  color:var(--dim);border:1px solid var(--line);border-radius:999px;font-size:12px;padding:10px 12px}
+#input{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:22px;padding:11px 16px;
+  font-size:16px;resize:none;outline:none;max-height:120px;font-family:inherit;line-height:1.35}
+#input:focus{border-color:var(--acc)}
+#send{flex:0 0 44px;width:44px;height:44px;border-radius:50%;background:var(--acc);border:none;color:#fff;font-size:18px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+#send:disabled{background:#283040;color:#556}
+#send:not(:disabled):active{background:var(--acc2)}
+.sheet{position:fixed;inset:0;background:#000a;z-index:40;display:none;align-items:flex-end}
+.sheet.open{display:flex}
+.sheet .card{background:var(--panel2);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:20px 18px 28px;width:100%;max-height:70vh;overflow-y:auto}
+.sheet h3{font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.sheet .sub{color:var(--dim);font-size:12px;margin-bottom:14px}
+.sheet .row{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid #ffffff0d}
+.sheet .row b{font-weight:600}
+.sheet .actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.sheet button{flex:1;min-width:110px;background:var(--panel);border:1px solid var(--line);color:var(--txt);
+  border-radius:12px;padding:11px;font-size:13px;cursor:pointer}
+.sheet button.pri{background:var(--acc);border-color:var(--acc)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + var(--safe-b));background:#20293a;color:var(--txt);
+  border:1px solid var(--line);padding:9px 16px;border-radius:999px;font-size:13px;z-index:50;opacity:0;transition:opacity .25s;pointer-events:none}
+.toast.show{opacity:1}
+.newbar{position:fixed;top:110px;left:50%;transform:translateX(-50%);background:var(--acc);color:#fff;font-size:12px;
+  padding:7px 14px;border-radius:999px;z-index:35;display:none;cursor:pointer;box-shadow:0 4px 14px #0008}
+</style>
+</head>
+<body>
+<header>
+  <h1>🌐 Room <span style="font-size:11px;color:var(--dim);font-weight:400">Nexus HQ</span></h1>
+  <div class="conn" id="conn"><span class="dot" id="connDot"></span><span id="connTxt">connecting…</span></div>
+</header>
+<div id="agentsBar"></div>
+<div id="chat"></div>
+<div class="newbar" id="newbar">↓ new messages</div>
+
+<div class="sheet" id="agentSheet">
+  <div class="card">
+    <h3 id="shAv">—</h3>
+    <div class="sub" id="shSub">—</div>
+    <div id="shRows"></div>
+    <div class="actions">
+      <button id="shMsg">Message this agent</button>
+      <button class="pri" id="shClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="composer">
+  <div class="to-sel" id="toSel">Room · all</div>
+  <textarea id="input" rows="1" placeholder="Message the room…" enterkeyhint="send"></textarea>
+  <button id="send" aria-label="Send">➤</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const chat=$("chat"), input=$("input"), send=$("send"), toSel=$("toSel");
+const agentsBar = document.getElementById("agentsBar");
+const state = { agents:[], msgs:new Map(), lastId:null, to:"all", connected:false, atBottom:true, sheetAgent:null };
+const AV = { hermes:"🪽", nexus:"🌐", system:"🛰️", room:"🛰️" };
+
+function fmtTime(ts){
+  const d = new Date(ts.includes("T") ? ts.replace(" ","T")+"Z" : ts + "Z");
+  if (isNaN(d)) return ts;
+  return d.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+}
+function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),2200); }
+function scrollIfBottom(){
+  const near = chat.scrollHeight - chat.scrollTop - chat.clientHeight < 120;
+  if (near || state.atBottom) chat.scrollTop = chat.scrollHeight;
+  else $("newbar").style.display="block";
+}
+chat.addEventListener("scroll", ()=>{
+  state.atBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight < 80;
+  if (state.atBottom) $("newbar").style.display="none";
+});
+$("newbar").addEventListener("click", ()=>{ chat.scrollTop=chat.scrollHeight; $("newbar").style.display="none"; });
+
+function renderAgents(agents){
+  state.agents = agents;
+  agentsBar.innerHTML = "";
+  for (const a of agents){
+    const chip = document.createElement("div");
+    chip.className = "agent-chip";
+    chip.innerHTML = `<span class="av">${a.avatar||"🤖"}</span><span>${a.name}${a.state==="unavailable"?" — unavailable":""}</span><span class="st ${a.state}"></span>`;
+    chip.addEventListener("click", ()=>openSheet(a));
+    agentsBar.appendChild(chip);
+  }
+}
+function openSheet(a){
+  state.sheetAgent=a;
+  $("shAv").innerHTML = `${a.avatar||"🤖"} ${a.name}`;
+  $("shSub").textContent = a.kind ? `${a.kind} agent · ${a.state}` : a.state;
+  const rows = [
+    ["Status", a.state],
+    ["Model", a.model || "—"],
+    ["Last activity", a.lastActivity ? new Date(a.lastActivity).toLocaleString() : "—"],
+    ["Assigned work", a.hasWork ? "yes" : "no"],
+    ["Detail", a.detail || "—"],
+  ];
+  $("shRows").innerHTML = rows.map(r=>`<div class="row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join("");
+  $("agentSheet").classList.add("open");
+}
+$("shClose").addEventListener("click", ()=>$("agentSheet").classList.remove("open"));
+$("agentSheet").addEventListener("click", e=>{ if(e.target.id==="agentSheet") $("agentSheet").classList.remove("open"); });
+$("shMsg").addEventListener("click", ()=>{
+  const a = state.sheetAgent; if(!a) return;
+  state.to = a.id === "hermes" ? "hermes" : (a.short || a.id);
+  toSel.textContent = a.name; toSel.title = "sending to: "+state.to;
+  $("agentSheet").classList.remove("open");
+  input.focus();
+});
+
+function renderMsg(m){
+  if (state.msgs.has(m.id)) return;
+  state.msgs.set(m.id, m);
+  const sp = m.speaker || { name: m.sender, avatar: AV[m.sender] || "🤖" };
+  // "mine" = sent by the configured human user (server stamps speaker.id)
+  const mine = sp.id === HUMAN_SENDER_ID;
+  const div = document.createElement("div");
+  div.className = "msg" + (mine?" mine":"") + (m.sender==="system"?" system":"");
+  const av = sp.avatar || AV[m.sender] || "🤖";
+  div.innerHTML = `
+    <div class="avatar">${av}</div>
+    <div class="bodywrap">
+      <div class="meta"><b>${sp.name||m.sender}</b><span>${fmtTime(m.createdAt)}</span></div>
+      <div class="bubble"></div>
+    </div>`;
+  div.querySelector(".bubble").textContent = m.body;
+  chat.appendChild(div);
+  scrollIfBottom();
+}
+
+function setConn(on, txt){ $("connDot").className = "dot " + (on?"on":(state.connected?"off":"")); $("connTxt").textContent = txt; }
+
+// ── SSE with auto-reconnect ──
+let HUMAN_SENDER_ID = null; // set from server hello
+let es;
+function connectSSE(){
+  setConn(false, "connecting…");
+  es = new EventSource("/api/stream");
+  es.addEventListener("open", ()=>{ state.connected=true; setConn(true,"live"); });
+  es.addEventListener("message", ev=>{
+    const d = JSON.parse(ev.data);
+    if (d.type==="hello") { setConn(true,"live"); if (d.human) HUMAN_SENDER_ID = d.human.id; }
+    else if (d.type==="chat") renderMsg(d.message);
+    else if (d.type==="status") renderAgents(d.agents);
+  });
+  es.addEventListener("error", ()=>{
+    state.connected=false; setConn(false,"reconnecting…");
+    es.close(); setTimeout(connectSSE, 3000);
+  });
+}
+
+async function loadHello(){
+  const res = await fetch("/api/hello");
+  const d = await res.json();
+  if (d.human) HUMAN_SENDER_ID = d.human.id;
+}
+
+async function loadHistory(){
+  const res = await fetch("/api/messages?limit=200");
+  const data = await res.json();
+  for (const m of (data.messages||[])) renderMsg(m);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function doSend(){
+  const text = input.value.trim();
+  if (!text) return;
+  if (text.length > 8000) return toast("Too long (max 8000)");
+  input.value=""; input.style.height="auto";
+  send.disabled = true;
+  try {
+    const res = await fetch("/api/send", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ text, to: state.to })
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>({})); toast(e.message||("error "+res.status)); input.value=text; }
+  } catch(e){ toast("offline — message not sent"); input.value=text; }
+  send.disabled = false; input.focus();
+}
+send.addEventListener("click", doSend);
+input.addEventListener("keydown", e=>{
+  if (e.key==="Enter" && !e.shiftKey){ e.preventDefault(); doSend(); }
+});
+input.addEventListener("input", ()=>{
+  input.style.height="auto"; input.style.height=Math.min(input.scrollHeight,120)+"px";
+});
+toSel.addEventListener("click", ()=>{
+  // Nexus is excluded from the cycle: no live connector exists, so addressing it
+  // would only produce a "connector unavailable" note — keep targets actionable.
+  const opts = ["all", ...state.agents.filter(a=>a.state!=="unavailable").map(a=>a.id==="hermes"?"hermes":(a.short||a.id))];
+  const i = opts.indexOf(state.to);
+  state.to = opts[(i+1)%opts.length];
+  const label = state.to==="all" ? "Room · all" : (state.agents.find(a=>((a.id==="hermes"?"hermes":(a.short||a.id))===state.to))?.name || state.to);
+  toSel.textContent = state.to==="all" ? "Room · all" : "→ "+label;
+});
+
+loadHello().then(loadHistory).then(connectSSE);
+</script>
+</body>
+</html>
